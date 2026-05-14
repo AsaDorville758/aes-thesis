@@ -1,2 +1,2 @@
 # aes-thesis
-Thesis on imlementing a hybrid approach to automated essay scoring to evaluate potential for providing assistance to human scorers
+Thesis on implementing a hybrid pretrained model approach to automated essay scoring to evaluate potential for providing assistance to human scorers
