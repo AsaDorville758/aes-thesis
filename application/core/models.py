@@ -2,9 +2,9 @@ from django.db import models
 
 class Essay(models.Model):
     class ESSAY_STATUS(models.TextChoices):
-        WAITING = 'waiting', 'Waiting'
-        ACCEPTED ='accepted', 'Accepted'
-        REJECTED = 'rejected', 'Rejected'
+        WAITING = 'waiting', 'Waiting to be processed'
+        ACCEPTED ='accepted', 'Accepted for processing'
+        REJECTED = 'rejected', 'Requires manual processing'
 
     student_id = models.CharField(
         max_length=10,
@@ -12,20 +12,22 @@ class Essay(models.Model):
     prompt = models.CharField(
         max_length=48
     )
-    text = models.TextField()
+    original_text = models.TextField()
+    processed_text = models.TextField()
     date_uploaded = models.DateTimeField(
         auto_now_add=True
     )
     status = models.CharField(
+        max_length=8,
         choices=ESSAY_STATUS.choices,
         default=ESSAY_STATUS.WAITING
     )
     def __str__(self):
         return f"""student id: {self.student_id}, prompt: {self.prompt}
-            text: {self.text[:30]}, date_uploaded: {self.date_uploaded}"""
+            text: {self.processed_text[:30]}, date_uploaded: {self.date_uploaded}"""
 
-class Features(models.Model):
-    essay = models.ForeignKey(
+class Feature(models.Model):
+    essay = models.OneToOneField(
         Essay, 
         on_delete=models.CASCADE
     )
@@ -40,8 +42,8 @@ class Features(models.Model):
         return f"""word count:{self.word_count}, sentence count: {self.sentence_count}, 
             average senence length: {self.avg_sentence_length}"""
 
-class Scores(models.Model):
-    essay = models.ForeignKey(
+class Score(models.Model):
+    essay = models.OneToOneField(
         Essay, 
         on_delete=models.CASCADE
     )
@@ -56,24 +58,36 @@ class Scores(models.Model):
             vocabulary: {self.vocabulary}, spelling: {self.spelling},
                 comprehension: {self.comprehension}, holistic: {self.holistic}"""
     
-class Metrics(models.Model):
+class Metric(models.Model):
     essay = models.OneToOneField(
         Essay,
         on_delete=models.CASCADE
     )
-    confidence_score = models.DecimalField(max_digits=4,decimal_places=3)
+    transcription_confidence= models.DecimalField(max_digits=4,decimal_places=3)
     character_error_rate = models.DecimalField(max_digits=4,decimal_places=3)
     word_error_rate = models.DecimalField(max_digits=4,decimal_places=3)
     def __str__(self):
-        return f"""confidence score:{self.confidence_score},
+        return f"""transcription confidence:{self.transcription_confidence},
             cer: {self.character_error_rate}, wer: {self.word_error_rate}"""
     
-class File(models.Model):
+class Submission(models.Model):
+    class SUBMISSION_TYPES(models.TextChoices):
+        HANDWRITTEN = 'HW', 'Handwritten'
+        SPOKEN = 'SP', 'Spoken'
+        TYPED = 'TY', 'Typed'
+
     essay = models.OneToOneField(
         Essay, 
         on_delete=models.CASCADE
     )
     type= models.CharField(
-        max_length=78
-        #make a textchoices
+        max_length=2,
+        choices=SUBMISSION_TYPES.choices,
+        default=SUBMISSION_TYPES.TYPED
     )
+    file = models.FileField(
+        upload_to="submissions/"
+    )    
+    def __str__(self):
+        return f"""essay_id:{self.essay}, type:{self.type}, """
+    
