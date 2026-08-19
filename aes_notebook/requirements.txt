@@ -1,0 +1,30 @@
+# Core data handling
+pandas>=2.0
+numpy>=1.24
+
+# Text normalisation / tokenisation
+nltk>=3.8
+
+# WER / CER scoring
+jiwer>=3.0
+
+# ASR component
+faster-whisper>=1.0
+librosa>=0.10
+
+# OCR component (engine="transformers" requires paddlepaddle + transformers/torch backend)
+paddleocr>=2.8
+paddlepaddle>=2.6      # swap for paddlepaddle-gpu (matching your CUDA version) if using device="cuda"
+transformers>=4.40
+torch>=2.2
+
+# --- Notes for reviewers ---
+# 1. nltk also needs the "punkt_tab" corpus downloaded at first run:
+#      python -m nltk.downloader punkt_tab
+# 2. librosa requires the system binary "ffmpeg" to be installed and on PATH
+#    (e.g. `apt install ffmpeg` / `brew install ffmpeg` / choco install ffmpeg on Windows).
+# 3. faster-whisper and paddlepaddle were run with device="cuda" in this notebook,
+#    which requires a working NVIDIA GPU + CUDA/cuDNN setup. To run on CPU instead,
+#    change device="cuda" to device="cpu" in the WhisperModel/PaddleOCR calls
+#    (expect much slower transcription/OCR).
+# 4. Standard-library modules used (no install needed): re, os, time, copy, pathlib.
