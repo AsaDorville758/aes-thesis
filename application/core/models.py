@@ -2,9 +2,9 @@ from django.db import models
 
 class Essay(models.Model):
     class ESSAY_STATUS(models.TextChoices):
-        WAITING = 'waiting', 'Waiting to be processed'
-        ACCEPTED ='accepted', 'Accepted for processing'
-        REJECTED = 'rejected', 'Requires manual processing'
+        WAITING = 'waiting', 'Essay has not been evaluated as yet'
+        PASS ='pass', 'Routed to transformer for scoring'
+        FAIL = 'fail', 'Routed to human scorer for manual processing'
 
     student_id = models.CharField(
         max_length=10,
@@ -13,7 +13,7 @@ class Essay(models.Model):
         max_length=48
     )
     original_text = models.TextField()
-    processed_text = models.TextField()
+    normalised_text = models.TextField()
     date_uploaded = models.DateTimeField(
         auto_now_add=True
     )
@@ -24,7 +24,7 @@ class Essay(models.Model):
     )
     def __str__(self):
         return f"""student id: {self.student_id}, prompt: {self.prompt}
-            text: {self.processed_text[:30]}, date_uploaded: {self.date_uploaded}"""
+            text: {self.normalised_text[:30]}, date_uploaded: {self.date_uploaded}"""
 
 class Feature(models.Model):
     essay = models.OneToOneField(
@@ -37,38 +37,53 @@ class Feature(models.Model):
         max_digits=3,
         decimal_places=1
     )
-    lexical_diversity = models.DecimalField(max_digits=3,decimal_places=1)
+    # lexical_diversity = models.DecimalField(max_digits=3,decimal_places=1)
     def __str__(self):
         return f"""word count:{self.word_count}, sentence count: {self.sentence_count}, 
-            average senence length: {self.avg_sentence_length}"""
-
+            average sentence length: {self.avg_sentence_length}"""
+    
 class Score(models.Model):
     essay = models.OneToOneField(
         Essay, 
         on_delete=models.CASCADE
     )
-    composition = models.DecimalField(max_digits=3,decimal_places=1)
-    grammar = models.DecimalField(max_digits=3,decimal_places=1)
-    vocabulary = models.DecimalField(max_digits=3,decimal_places=1)
-    spelling = models.DecimalField(max_digits=3,decimal_places=1)
-    comprehension = models.DecimalField(max_digits=3,decimal_places=1)
+    content = models.PositiveSmallIntegerField()
+    organisation = models.PositiveSmallIntegerField()
+    word_choice = models.PositiveSmallIntegerField()
+    sentence_fluency = models.PositiveSmallIntegerField()
+    conventions = models.PositiveSmallIntegerField()
     holistic = models.DecimalField(max_digits=3,decimal_places=1)
     def __str__(self):
-        return f"""composition:{self.composition}, grammar: {self.grammar}, 
-            vocabulary: {self.vocabulary}, spelling: {self.spelling},
-                comprehension: {self.comprehension}, holistic: {self.holistic}"""
-    
+        return f"""Content:{self.content}, Organisation: {self.organisation}, 
+            word_choice: {self.word_choice}, sentence_fluency: {self.sentence_fluency},
+            conventions: {self.conventions}, Score: {self.holistic}"""
+
 class Metric(models.Model):
     essay = models.OneToOneField(
         Essay,
         on_delete=models.CASCADE
     )
-    transcription_confidence= models.DecimalField(max_digits=4,decimal_places=3)
-    character_error_rate = models.DecimalField(max_digits=4,decimal_places=3)
-    word_error_rate = models.DecimalField(max_digits=4,decimal_places=3)
+    avg_logprob = models.DecimalField(
+        max_digits=4,
+        decimal_places=3, 
+        null=True,
+        blank=True
+        )
+    compression_ratio = models.DecimalField(
+        max_digits=4,
+        decimal_places=3, 
+        null=True,
+        blank=True
+        )
+    avg_confidence_score = models.DecimalField(
+        max_digits=4,
+        decimal_places=3, 
+        null=True,
+        blank=True
+        )
     def __str__(self):
-        return f"""transcription confidence:{self.transcription_confidence},
-            cer: {self.character_error_rate}, wer: {self.word_error_rate}"""
+        return f"""ASR Evaluation -(avg_logprob):{self.avg_logprob}, (compression ratio):{self.compression_ratio};
+            OCR Evaluation - (average confidence score):{self.avg_confidence_score}"""
     
 class Submission(models.Model):
     class SUBMISSION_TYPES(models.TextChoices):
