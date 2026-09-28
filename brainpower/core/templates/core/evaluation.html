@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluation | BrainPower AES</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f5f7fb;
+            min-height: 100vh;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .page-header {
+            padding: 45px 0 30px;
+        }
+
+        .page-header h1 {
+            font-weight: 700;
+        }
+
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.07);
+        }
+
+        .card-header {
+            background: white;
+            border-bottom: 1px solid #eef0f3;
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+            border-radius: 16px 16px 0 0 !important;
+        }
+
+        .score-card {
+            text-align: center;
+            padding: 1.5rem;
+            height: 100%;
+        }
+
+        .score {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        .score-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .feature-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .essay-text {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.25rem;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        footer {
+            color: #6c757d;
+            font-size: 0.9rem;
+            padding: 40px 0 25px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <span class="navbar-brand">BrainPower AES</span>
+            <span class="text-white-50 small">
+                Automated Essay Scoring
+            </span>
+        </div>
+    </nav>
+
+    {% if essay %}
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Evaluation Results</h1>
+            <p class="text-muted mb-0">
+                Automated assessment of the submitted essay.
+            </p>
+        </div>
+    </section>
+
+    <div class="container pb-5">
+
+        <!-- Student Name -->
+        <div class="card mb-4">
+            <div class="card-header">
+                Student: {{student_name}}
+            </div>
+        </div>
+
+        <!-- Essay -->
+        <div class="card mb-4">
+
+            <div class="card-header">
+                Essay (uploaded as {{uploaded_as}})
+            </div>
+
+            <div class="card-body">
+
+                <div class="essay-text mb-4">
+                    {{essay.get_text}}
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="card mb-4">
+            <div class="card-header">
+                Essay Features
+            </div>
+
+            <div class="card-body">
+                <div class="row text-center">
+
+                    <div class="col-md-6">
+                        <div class="feature-value">
+                            {{features.word_count}}
+                        </div>
+                        <div class="text-muted">
+                            Words
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="feature-value">
+                            {{features.sentence_count}}
+                        </div>
+                        <div class="text-muted">
+                            Sentences
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        {% if not manual_scoring %}
+
+        <!-- Trait Scores -->
+        <div class="card mb-4">
+            <div class="card-header">
+                Trait Scores
+            </div>
+
+            <div class="card-body">
+                <div class="row g-3">
+
+                    <div class="col-6 col-md">
+                        <div class="score-card bg-light rounded-3">
+                            <div class="score-label">Content</div>
+                            <div class="score">
+                                {{trait_scores.content}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md">
+                        <div class="score-card bg-light rounded-3">
+                            <div class="score-label">Organization</div>
+                            <div class="score">
+                                {{trait_scores.organization}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md">
+                        <div class="score-card bg-light rounded-3">
+                            <div class="score-label">Word Choice</div>
+                            <div class="score">
+                                {{trait_scores.word_choice}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md">
+                        <div class="score-card bg-light rounded-3">
+                            <div class="score-label">Sentence Fluency</div>
+                            <div class="score">
+                                {{trait_scores.sentence_fluency}}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md">
+                        <div class="score-card bg-light rounded-3">
+                            <div class="score-label">Conventions</div>
+                            <div class="score">
+                                {{trait_scores.conventions}}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Composite Score -->
+        <div class="card mb-4">
+            <div class="card-header">
+                Composite Score
+            </div>
+
+            <div class="card-body">
+                <div class="row g-3">
+
+                    <div class="col-6 col-md">
+                        <div class="score-card bg-light rounded-3">
+                            <div class="score">
+                                {{composite_score}}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+
+        <!-- Transcription Warning -->
+        <div class="card mb-4">
+            <div class="card-body text-center py-5">
+
+                <h4 class="mb-3">
+                    Automated Scoring Unavailable
+                </h4>
+
+                <p class="text-muted mb-4">
+                    The audio transcription did not meet the quality
+                    requirements for automated scoring. Please try again
+                    with a clearer recording or submit the essay as text.
+                </p>
+
+            </div>
+        </div>
+
+        {% endif %}
+
+        <!-- Return -->
+        <div class="text-center">
+            <a href="{% url 'core:index' %}" class="btn btn-primary px-4">
+                Evaluate Another Essay
+            </a>
+        </div>
+
+    </div>
+
+    {% endif %}
+
+    <footer class="text-center">
+        <div class="container">
+            BrainPower AES &mdash; Automated Essay Scoring
+        </div>
+    </footer>
+
+</body>
+</html>
+

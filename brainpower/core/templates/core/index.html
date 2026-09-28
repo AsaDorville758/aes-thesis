@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrainPower AES</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+<style>
+    body {
+        background: #f5f7fb;
+        min-height: 100vh;
+    }
+
+    .navbar-brand {
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .hero {
+        padding: 70px 0 45px;
+    }
+
+    .hero h1 {
+        font-weight: 700;
+        color: #212529;
+    }
+
+    .hero p {
+        color: #6c757d;
+        max-width: 650px;
+        margin: 0 auto;
+    }
+
+    .submission-card {
+        height: 100%;
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.07);
+    }
+
+    .submission-card .card-body {
+        padding: 2rem;
+    }
+
+    .submission-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .submission-card h3 {
+        font-weight: 600;
+    }
+
+    /* Django-generated form fields */
+    .submission-card form > div {
+        margin-bottom: 1rem;
+    }
+
+    .submission-card label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 0.4rem;
+    }
+
+    .submission-card input,
+    .submission-card textarea,
+    .submission-card select {
+        display: block;
+        width: 100%;
+        padding: 0.65rem 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        background: #fff;
+        font-size: 1rem;
+        box-sizing: border-box;
+    }
+
+    .submission-card textarea {
+        min-height: 220px;
+        resize: vertical;
+    }
+
+    .submission-card input:focus,
+    .submission-card textarea:focus,
+    .submission-card select:focus {
+        border-color: #86b7fe;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 0.7rem;
+        font-weight: 600;
+        border-radius: 10px;
+    }
+
+    footer {
+        color: #6c757d;
+        font-size: 0.9rem;
+        padding: 40px 0 25px;
+    }
+</style>
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <span class="navbar-brand">BrainPower AES</span>
+            <span class="text-white-50 small">
+                Automated Essay Scoring
+            </span>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="hero text-center">
+        <div class="container">
+            <h1>Evaluate an Essay</h1>
+            <p class="lead mt-3">
+                Submit a written or spoken essay for automated evaluation
+                across five writing traits.
+            </p>
+        </div>
+    </section>
+
+    <!-- Submission Options -->
+    <div class="container pb-5">
+        <div class="row g-4">
+
+            <!-- Typed Essay -->
+            <div class="col-lg-6">
+                <div class="card submission-card">
+                    <div class="card-body">
+
+                        <div class="submission-icon">✍️</div>
+
+                        <h3>Typed Essay</h3>
+                        <p class="text-muted">
+                            Enter a written essay directly into the system
+                            for evaluation.
+                        </p>
+
+                        <hr class="my-4">
+
+                        <form action="{% url 'core:submit_essay'%}" method="POST">
+                            {% csrf_token %}
+                            {{essay_form.as_div}}
+
+                            <button
+                                type="submit"
+                                name="submit_essay"
+                                class="btn btn-primary btn-submit mt-3">
+                                Evaluate Essay
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audio Essay -->
+            <div class="col-lg-6">
+                <div class="card submission-card">
+                    <div class="card-body">
+
+                        <div class="submission-icon">🎙️</div>
+
+                        <h3>Spoken Essay</h3>
+                        <p class="text-muted">
+                            Upload a spoken essay and let BrainPower
+                            transcribe and evaluate it.
+                        </p>
+
+                        <hr class="my-4">
+
+                        <form action="{% url 'core:submit_essay'%}"
+                              method="POST"
+                              enctype="multipart/form-data">
+
+                            {% csrf_token %}
+                            {{audio_form.as_div}}
+
+                            <button
+                                type="submit"
+                                name="submit_audio"
+                                class="btn btn-primary btn-submit mt-3">
+                                Evaluate Audio
+                            </button>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="text-center">
+        <div class="container">
+            BrainPower AES &mdash; Automated Essay Scoring
+        </div>
+    </footer>
+
+</body>
+</html>
